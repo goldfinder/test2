@@ -1,0 +1,98 @@
+function ELVcitem(Currentfloor:number,Floor:number,status:text) :: item:
+    if {_Currentfloor} is {_Floor}:
+        set {_Citem} to red stained glass pane named "&9Current Floor &8(Floor %{_Floor}%)"
+    else:
+        if "%{_status}%" is "INDEV":
+            set {_Citem} to brown stained glass pane named "&fFloor %{_Floor}%"
+        else if "%{_status}%" is "NODEV":
+            set {_Citem} to orange stained glass pane named "&fFloor %{_Floor}%"
+        else:
+            set {_Citem} to glass pane named "&fFloor %{_Floor}%"
+    return {_Citem}
+            
+on rightclick on sign:
+    if line 1 of event-block is "&b[ELEVATOR]":
+        set {_gui} to a new chest inventory with 6 rows named "&8[&fELEVATOR&8]"
+        loop 1*9 times:
+            set slot loop-number - 1 of {_gui} to black stained glass pane named "&9"
+        loop 5*9 times:
+            set slot loop-number + 8 of {_gui} to cyan stained glass pane named "&9"
+        loop 13 times:
+            if line 2 of the event-block contains ": %(-1 * loop-number) + 4%":
+                set {_cfloor} to (-1 * loop-number) + 4
+        set slot 7 of {_gui} to yellow stained glass pane named "&eNext page" with lore "Page: 1/1"
+        set slot 8 of {_gui} to yellow stained glass pane named "&ePrevious page" with lore "Page: 1/1"
+        set slot 4 of {_gui} to white stained glass pane named "&f%uncolored line 2 of event-block%"
+        set {_item} to ELVcitem({_cfloor}, 3, "INDEV")
+        set slot 9 of {_gui} to {_item} with lore "&9IN-DEV" and "&eZeta Crew Penthouse"
+        set {_item} to ELVcitem({_cfloor}, 2, "NODEV")
+        set slot 10 of {_gui} to {_item} with lore "&9NO-DEV" and "&fFacility Staff Offices"
+        set {_item} to ELVcitem({_cfloor}, 1, "INDEV")
+        set slot 11 of {_gui} to {_item} with lore "&9IN-DEV" and "&fFacility Operations" and "&fCrew Selection" and "&fCrew Operation Rooms"
+        set {_item} to ELVcitem({_cfloor}, 0, "NC")
+        set slot 12 of {_gui} to {_item} with lore "&eNEARING COMPLETION" and "&fTram System" and "&fBank" and "&fForge"
+        set {_item} to ELVcitem({_cfloor}, -1, "NODEV")
+        set slot 13 of {_gui} to {_item} with lore "&9NO-DEV" and "&fFacility Warehouse" and "&fFacility Storage Monitor"
+        set {_item} to ELVcitem({_cfloor}, -2, "INDEV")
+        set slot 14 of {_gui} to {_item} with lore "&9NO-DEV" and "&fPlayer Penthouses" and "&fPlayer Suites"
+        set {_item} to ELVcitem({_cfloor}, -3, "NODEV")
+        set slot 15 of {_gui} to {_item} with lore "&9NO-DEV" and "&aNothing planned for this floor"
+        set {_item} to ELVcitem({_cfloor}, -4, "NODEV")
+        set slot 16 of {_gui} to {_item} with lore "&9NO-DEV" and "&fShopping Area"
+        set {_item} to ELVcitem({_cfloor}, -5, "NC")
+        set slot 17 of {_gui} to {_item} with lore "&eNEARING COMPLETION" and "&fSpawn" and "&6&lStaff Room" and "&fCake Rooms" and "&fActive staff Podiums"
+        set {_item} to ELVcitem({_cfloor}, -6, "INDEV")
+        set slot 18 of {_gui} to {_item} with lore "&eIN-DEV" and "&fArmory" and "&fQuests"
+        set {_item} to ELVcitem({_cfloor}, -7, "INDEV")
+        set slot 19 of {_gui} to {_item} with lore "&eIN-DEV" and "&fPlayer Rooms"
+        set {_item} to ELVcitem({_cfloor}, -8, "NODEV")
+        set slot 20 of {_gui} to {_item} with lore "&9NO-DEV" and "&4Omega Suite" and "&bAlpha Suite"
+        set {_item} to ELVcitem({_cfloor}, -9, "NODEV")
+        set slot 21 of {_gui} to {_item} with lore "&9NO-DEV" and "&4(CONSENT | GAMBLING)&f Casino"
+        open {_gui} to player
+
+on inventory click: # Listen for players clicking in an inventory.
+    name of event-inventory is "&8[&fELEVATOR&8]"
+    if "%event-inventory%" is not "inventory of <none>":
+        stop
+    else:
+        cancel event
+    if event-itemtype is red stained glass pane:
+        stop
+    if event-itemtype is black stained glass pane:
+        stop
+    if event-itemtype is orange stained glass pane:
+        stop
+    if event-itemtype is white stained glass pane:
+        stop
+    if event-itemtype is cyan stained glass pane:
+        stop
+    if event-itemtype is brown stained glass pane:
+        if player does not have permission "Builder":
+            stop
+    if event-itemtype is air:
+        stop
+    if event-itemtype is not set:
+        stop
+    if index of event-slot is 9: #Floor 3
+        if player has permission "Staff.Elevator":
+            teleport the player to location(335.5, 11, 1178.5, world "World", 90,0)
+        else:
+            close player's inventory
+            send "&4&l( ! )&f You have no permissions to that floor."
+    if index of event-slot is 11: #Floor 1
+        if player has permission "Staff.Elevator":
+            teleport the player to location(316.5, -38, 746.5, world "World", 90,0)
+        else:
+            close player's inventory
+            send "&4&l( ! )&f You have no permissions to that floor."
+    if index of event-slot is 12: #Floor 0
+        teleport the player to location(538.5, -60, 749.5, world "World", 90, 0)
+    if index of event-slot is 17: #Floor -5
+        teleport the player to location(25.5, -60, 20.5, world "World", 90, 0)
+    if index of event-slot is 18: #Floor -6
+        if player has permission "Staff.Elevator":
+            teleport the player to location(218.5, -60, -65.5, world "World", 90, 0)
+        else:
+            close player's inventory
+            send "&4&l( ! )&f You have no permissions to that floor."
